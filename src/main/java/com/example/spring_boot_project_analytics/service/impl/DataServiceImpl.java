@@ -123,57 +123,7 @@ public class DataServiceImpl implements DataService {
     }
 
 
-    @Override
-    public CompletableFuture<List<ForecastResult>> sendFileToFlaskAndGetForecastAsync(MultipartFile file) {
-        return CompletableFuture.supplyAsync(() -> {
-            String flaskUrl = "http://localhost:5000/upload-flask";
-            ResponseEntity<String> response = restTemplate.exchange(
-                    flaskUrl,
-                    HttpMethod.POST,
-                    new HttpEntity<>(file),
-                    String.class
-            );
-            String taskId = response.getBody();  // Получаем ID задачи
-
-            return checkTaskStatusAndFetchResult(taskId);
-        });
-    }
-
-    private List<ForecastResult> checkTaskStatusAndFetchResult(String taskId) {
-        String statusUrl = "http://localhost:5000/status/" + taskId;
-        int attempts = 0;
-        while (attempts < MAX_ATTEMPTS) {
-            try {
-                Thread.sleep(POLLING_INTERVAL);
-                ResponseEntity<TaskStatus> statusResponse = restTemplate.getForEntity(statusUrl, TaskStatus.class);
-                TaskStatus taskStatus = statusResponse.getBody();
-
-                if ("SUCCESS".equals(taskStatus.getState())) {
-                    String resultUrl = "http://localhost:5000/result/" + taskId;
-                    ResponseEntity<List<ForecastResult>> resultResponse = restTemplate.exchange(
-                            resultUrl,
-                            HttpMethod.GET,
-                            null,
-                            new ParameterizedTypeReference<List<ForecastResult>>() {}
-                    );
-                    List<ForecastResult> forecastResults = resultResponse.getBody();
-
-                    // Здесь вы можете сохранить результаты в базе данных
-                    forecastResultRepository.saveAll(forecastResults);
-
-                    return forecastResults;
-                }
-
-                attempts++;
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                throw new RuntimeException("Task status check interrupted", e);
-            }
-        }
-        throw new RuntimeException("Task did not complete in time.");
-    }
-
-
+   
     @Override
     @Transactional
     public RecordDto deleteRow(Long data_id) {
