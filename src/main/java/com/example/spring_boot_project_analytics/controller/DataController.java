@@ -1,10 +1,10 @@
 package com.example.spring_boot_project_analytics.controller;
 
-import com.example.spring_boot_project_analytics.Helper.CSVHelper;
-import com.example.spring_boot_project_analytics.dataTransferObject.RecordDto;
-import com.example.spring_boot_project_analytics.dataTransferObject.TableDetailsDto;
+import com.example.spring_boot_project_analytics.MainTable.Helper.CSVHelper;
+import com.example.spring_boot_project_analytics.MainTable.dto.RecordDto;
+import com.example.spring_boot_project_analytics.TableDetails.dto.TableDetailsDto;
 import com.example.spring_boot_project_analytics.message.ResponseMessage;
-import com.example.spring_boot_project_analytics.service.DataService;
+import com.example.spring_boot_project_analytics.MainTable.service.DataService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

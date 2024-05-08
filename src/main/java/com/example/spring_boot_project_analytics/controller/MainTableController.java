@@ -1,7 +1,8 @@
 package com.example.spring_boot_project_analytics.controller;
 
-import com.example.spring_boot_project_analytics.dataTransferObject.RecordDto;
-import com.example.spring_boot_project_analytics.service.DataService;
+import com.example.spring_boot_project_analytics.MainTable.dto.RecordDto;
+import com.example.spring_boot_project_analytics.MainTable.service.DataService;
+import com.example.spring_boot_project_analytics.Forecast.service.ForecastService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +17,7 @@ import java.util.List;
 public class MainTableController {
 
     private DataService dataService;
+    private ForecastService forecastService;
 
     //Build Get All BY ID (SPECIFIC TABLE) DATA REST API
     @GetMapping
@@ -23,6 +25,17 @@ public class MainTableController {
         List<RecordDto> records = dataService.getAllTableStoredData(metaId);
         return ResponseEntity.ok(records);
     }
+    @PostMapping("/upload-process")
+    public ResponseEntity<String> uploadToFlask(@PathVariable("metaId") Long metaId) {
+        try {
+            // Вызов метода сервиса для отправки файла и получения прогноза
+            forecastService.sendFileToFlaskAndGetForecastAsync(metaId);
+            return ResponseEntity.status(HttpStatus.OK).body("File uploaded successfully wait for forecast");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error uploading file: " + e.getMessage());
+        }
+    }
+
 
     //Build POST ROW DATA REST API
     @PostMapping
